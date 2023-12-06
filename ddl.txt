@@ -1,0 +1,319 @@
+ CREATE TABLE user (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(255),
+    name VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    imgUrl VARCHAR(255),
+    phoneNumber VARCHAR(255),
+    isActive INTEGER,
+    is_verified INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    last_login DATETIME,
+    role_id INTEGER,
+    department_id INTEGER,
+    FOREIGN KEY (role_id) REFERENCES role(id),
+    FOREIGN KEY (department_id) REFERENCES department(id)
+);
+
+
+CREATE TABLE supervisor (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(255),
+    office VARCHAR(255),
+    specialization VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (department_id) REFERENCES department(id)
+);
+
+
+
+CREATE TABLE supervisor_committee (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    committee_id INTEGER,
+    supervisor_id INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (committee_id) REFERENCES committee(id),
+    FOREIGN KEY (supervisor_id) REFERENCES supervisor(id)
+);
+
+
+CREATE TABLE student (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(255),
+    group_id INTEGER,
+    batch_id INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    -- Add foreign key references for group and batch tables if they exist
+    -- FOREIGN KEY (group_id) REFERENCES group(id),
+    -- FOREIGN KEY (batch_id) REFERENCES batch(id)
+);
+
+
+CREATE TABLE rubric (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    criteria VARCHAR(255),
+    rubric_type_id INTEGER,
+    PLO_id INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (rubric_type_id) REFERENCES rubric_type(id),
+    FOREIGN KEY (PLO_id) REFERENCES PLO(id)
+);
+
+CREATE TABLE rubric_type (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    rubric_type VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+
+
+CREATE TABLE rubric_detail (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    details VARCHAR(255),
+    points INTEGER,
+    rubric_id INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (rubric_id) REFERENCES rubric(id)
+);
+
+
+CREATE TABLE role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(255),
+    role_description VARCHAR(255),
+    isActive INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+
+
+
+CREATE TABLE role_permission (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role_id BIGINT NOT NULL,
+    permission_id BIGINT NOT NULL,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    FOREIGN KEY (role_id) REFERENCES role(id),
+    FOREIGN KEY (permission_id) REFERENCES permission(id)
+);
+
+
+
+CREATE TABLE report_type (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    report_type VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+
+
+CREATE TABLE PLO (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+
+CREATE TABLE permission (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    pid INTEGER,
+    slug VARCHAR(255),
+    description VARCHAR(255),
+    active INTEGER,
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+
+
+CREATE TABLE notification_queue (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INTEGER,
+    status_viewed INTEGER,
+    viewed_at DATETIME,
+    deleted_at DATETIME,
+    is_deleted INTEGER,
+    announcement_id BIGINT,
+    FOREIGN KEY (announcement_id) REFERENCES announcement(id)
+);
+
+
+CREATE TABLE meeting (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    supervisor_id INTEGER,
+    group_id INTEGER,
+    agenda VARCHAR(255),
+    action_work VARCHAR(255),
+    meeting_duration INTEGER,
+    date_and_time DATETIME,
+    location VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+CREATE TABLE meeting_assigned_work (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    student_id INTEGER,
+    meeting_id INTEGER,
+    action_work VARCHAR(255),
+    deleted_at DATETIME,
+    is_deleted INTEGER
+);
+CREATE TABLE idea (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    description VARCHAR(255),
+    keywords VARCHAR(255),
+    approved_status INT,
+    status_updated_at TIMESTAMP,
+    remarks VARCHAR(255),
+    deleted_at TIMESTAMP,
+    is_deleted INT,
+    group_id INT,
+    supervisor_id INT,
+    committee_id INT
+);
+
+
+CREATE TABLE group (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    project_title VARCHAR(255),
+    committee_id INT,
+    supervisor_id INT,
+    group_status INT,
+    project_status VARCHAR(255),
+    deleted_at TIMESTAMP,
+    is_deleted INT
+);
+CREATE TABLE group_supervisor (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT,
+    supervisor_id INT,
+    deleted_at TIMESTAMP,
+    is_deleted INT
+);
+
+
+CREATE TABLE group_submitted_file (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    group_id INTEGER,
+    assigned_work_id INTEGER,
+    submission_date_time TIMESTAMP,
+    submission_status INTEGER,
+    obtained_marks INTEGER,
+    comments VARCHAR(255),
+    evaluation_at TIMESTAMP,
+    evaluation_status INTEGER,
+    deleted_at TIMESTAMP,
+    is_deleted INTEGER
+);
+
+
+CREATE TABLE group_idea (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    idea_id INTEGER,
+    group_id INTEGER,
+    supervisor_id INTEGER,
+    deleted_at TIMESTAMP,
+    is_deleted INTEGER
+);
+
+
+CREATE TABLE file (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    group_submitted_files_id INT,
+    file_name VARCHAR(255),
+    deleted_at TIMESTAMP,
+    is_deleted INT,
+    CONSTRAINT fk_group_submitted_files
+        FOREIGN KEY (group_submitted_files_id)
+        REFERENCES group_submitted_file (id)
+);
+
+
+CREATE TABLE department (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    department_name VARCHAR(255) NOT NULL,
+    is_deleted INT,
+    deletedAt TIMESTAMP,
+    UNIQUE KEY uk_department_name (department_name)
+);
+
+
+CREATE TABLE criteria_marking (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    rubric_details_id BIGINT,
+    points VARCHAR(255),
+    group_id BIGINT,
+    deleted_at TIMESTAMP,
+    is_deleted INT,
+    CONSTRAINT fk_rubric_details FOREIGN KEY (rubric_details_id) REFERENCES rubric_detail(id),
+    CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES `group`(id)
+);
+CREATE TABLE committee (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    supervisor_id BIGINT,
+    batch_id BIGINT,
+    deleted_at TIMESTAMP,
+    is_deleted INT,
+    CONSTRAINT fk_supervisor FOREIGN KEY (supervisor_id) REFERENCES supervisor(id),
+    CONSTRAINT fk_batch FOREIGN KEY (batch_id) REFERENCES batch(id)
+);
+CREATE TABLE batch (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    batch VARCHAR(255),
+    isActive INT,
+    deleted_at TIMESTAMP,
+    is_deleted INT
+);
+
+CREATE TABLE attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    meeting_id INT NOT NULL,
+    status_is_present INT,
+    deleted_at TIMESTAMP,
+    is_deleted INT,
+    FOREIGN KEY (student_id) REFERENCES student(id),
+    FOREIGN KEY (meeting_id) REFERENCES meeting(id)
+);
+
+CREATE TABLE assigned_work (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    description VARCHAR(255),
+    total_points VARCHAR(255),
+    report_type_id INTEGER,
+    deadLine TIMESTAMP,
+    batch_id INTEGER,
+    deleted_at TIMESTAMP,
+    is_deleted INTEGER,
+    FOREIGN KEY (report_type_id) REFERENCES report_type(id),
+    FOREIGN KEY (batch_id) REFERENCES batch(id)
+);
+
+
+CREATE TABLE announcement (
+    id SERIAL PRIMARY KEY,
+    supervisor_id INTEGER,
+    title VARCHAR(255),
+    description VARCHAR(255),
+    batch_id INTEGER,
+    deleted_at TIMESTAMP,
+    is_deleted INTEGER,
+    date_and_time TIMESTAMP,
+    FOREIGN KEY (supervisor_id) REFERENCES supervisor(id),
+    FOREIGN KEY (batch_id) REFERENCES batch(id)
+);
+
+
+
